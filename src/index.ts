@@ -7,6 +7,7 @@ import cors from 'cors';
 import helmet from 'helmet';
 import { CommonRoutesConfig } from './helpers/CommonRoutesConfig';
 import express, { Application, Request, Response } from 'express';
+import { EmailRoutes } from './routes/EmailRoutes';
 
 const PORT: number = parseInt( process.env.PORT as string, 10);
 const app: Application = express();
@@ -15,6 +16,7 @@ const routes: Array<CommonRoutesConfig> = [];
 app.use(helmet());
 app.use(cors());
 app.use(express.json());
+routes.push(new EmailRoutes(app));
 
 app.use('*', (req: Request, res: Response) => {
     res.status(400).json({
