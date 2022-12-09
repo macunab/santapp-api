@@ -1,6 +1,7 @@
 import { Request, Response } from 'express';
 import nodemailer from 'nodemailer';
 import path from 'path';
+import { Lottery, Participant } from '../models/lottery.interface';
 
 const hbs = require('nodemailer-express-handlebars');
 
@@ -8,7 +9,7 @@ const transporter = nodemailer.createTransport({
     service: 'Gmail',
     auth: {
         user: 'mn.acunab@gmail.com',
-        pass: ''
+        pass: 'ewxijeyflwmbuluz'
     }
 });
 
@@ -26,7 +27,16 @@ class EmailController {
 
     async sendEmailLottery(req: Request, res: Response) {
 
-        const emailOptions = {
+        const lottery: Lottery = req.body;
+        const randomParticipants: Array<Participant> = lottery.participants.sort((a, b) => 0.5 - Math.random());
+        const matches = randomParticipants.map((value, index) => {
+            return {
+                santa: value,
+                receiver: randomParticipants[index + 1] ? randomParticipants[index + 1].name : randomParticipants[0].name
+            }
+        })
+
+       /* const emailOptions = {
             from: 'info@gmail.com',
             to: 'mn.acunab@gmail.com',
             subject: 'Welcome!',
@@ -48,10 +58,10 @@ class EmailController {
                 })
             }
             console.log('Message send: ' + info.response);
-        });
+        });*/
         res.status(200).json({
             ok: true,
-            msg: 'Se envio email?'
+            msg: matches
         })
     }
 }
