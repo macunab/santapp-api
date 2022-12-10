@@ -28,7 +28,7 @@ class EmailController {
     async sendEmailLottery(req: Request, res: Response) {
 
         const lottery: Lottery = req.body;
-        const randomParticipants: Array<Participant> = lottery.participants.sort((a, b) => 0.5 - Math.random());
+        const randomParticipants: Array<Participant> = lottery.participants.sort(() => Math.random() - 0.5);
         const matches = randomParticipants.map((value, index) => {
             return {
                 santa: value,
@@ -36,32 +36,27 @@ class EmailController {
             }
         })
 
-       /* const emailOptions = {
-            from: 'info@gmail.com',
-            to: 'mn.acunab@gmail.com',
-            subject: 'Welcome!',
-            template: 'email',
-            context: {
-                organizationName: 'Alaska',
-                projectName: 'Projecto Gorila',
-                taskType: 'Design',
-                assignmentName: 'Commit refactory',
-                completedUser: 'Jorge'
+        for(var match of matches) {
+            const emailOptions = {
+                from: 'santapp@gmail.com',
+                to: match.santa.email,
+                subject: 'Secret Santa Resultados',
+                template: 'email',
+                context: {
+                    title: lottery.tittle,
+                    santaName: match.santa.name,
+                    receiver: match.receiver,
+                }
             }
+            await transporter.sendMail(emailOptions, function(error, info) {
+                if(error) {
+                    console.log(error);
+                }
+            })
         }
-        await transporter.sendMail(emailOptions, function(error, info) {
-            if(error) {
-                console.log(error);
-                return res.status(400).json({
-                    ok: false,
-                    msg: `Ocurrio un error: ${ error }`
-                })
-            }
-            console.log('Message send: ' + info.response);
-        });*/
         res.status(200).json({
             ok: true,
-            msg: matches
+            msg: 'the emails were sent successfully'
         })
     }
 }
